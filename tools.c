@@ -2,7 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
-#include "tools.h"
+#include "Tools.h"
 
 int shell_command(const char *cmd, char *retbuff)
 {

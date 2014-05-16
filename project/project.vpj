@@ -200,27 +200,25 @@
 			Name="Source Files"
 			Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm">
 			<F N="../log.c"/>
-			<F N="../plugin_base.c"/>
-			<F N="../plugin_cus.c"/>
+			<F N="../OracleDB.c"/>
 			<F N="../RecDeal.c"/>
 			<F N="../SemTools.c"/>
 			<F N="../socket_api.c"/>
-			<F N="../tools.c"/>
-			<F N="../Transmit.c"/>
+			<F N="../Tools.c"/>
 			<F N="../TuxClient.c"/>
 			<F N="../TuxMain.c"/>
 		</Folder>
 		<Folder
 			Name="Header Files"
 			Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.inc;*.sh;*.cpy;*.if">
+			<F N="../Define.h"/>
 			<F N="../Global.h"/>
 			<F N="../log.h"/>
-			<F N="../plugin.h"/>
+			<F N="../OracleDB.h"/>
 			<F N="../RecDeal.h"/>
 			<F N="../SemTools.h"/>
 			<F N="../socket_api.h"/>
-			<F N="../tools.h"/>
-			<F N="../Transmit.h"/>
+			<F N="../Tools.h"/>
 			<F N="../TuxClient.h"/>
 		</Folder>
 		<Folder

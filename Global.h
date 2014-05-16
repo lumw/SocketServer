@@ -1,69 +1,105 @@
-#ifndef _TUXEDO_REALINTF_GLOBAL_INCLUDE_
-#define _TUXEDO_REALINTF_GLOBAL_INCLUDE_
-
-#define MAX_AUTH_IP_NUM     20
-#define MAX_PORT_NUM        100
-
-#define RUN_STATUS_STOPED   0
-#define RUN_STATUS_STOPING  1
-#define RUN_STATUS_RUNNING  2
-#define RUN_STATUS_REFRESH  3
-
-struct SHM_HEAD
-{
-    int  proc_num;
-    char start_time[64];        /*系统启动时间*/
-};
-
-struct SHM_CONF
-{
-    int  lsnr_port;             /*监听端口*/
-    int  run_status;            /*进程运行状态*/
-    char start_time[64];        /*进程启动时间*/
-    int  proc_id;               /*进程ID*/
-    char cur_active[64];        /*进程当前执行的动作*/
-    char last_time[64];         /*最后一次访问时间*/
-    int  deal_num;              /*处理交易数量*/
-    int  is_used;
-};
-
-struct PORT_CONF
-{
-    char name[128];                     /**/
-    int  lsnr_port;                     /*监听端口*/
-    int  lsnr_num;                      /*监听数量*/
-    int  lsnr_len;                      /*监听队列长度*/
-    int  out_time;                      /*超时时间(秒)*/
-    int  system_id;                     /*系统ID*/
-    int  is_reuse_addr;                 /*是否重用监听端口*/
-    int  is_rec_follow;                 /*是否记录后续包*/
-    int  is_long_link;                  /*是否是常连接*/
-    int  is_debug;                      /*调试开关*/
-};
-
-struct INIT_CONF
-{
-    char cur_version[64];               /*当前程序版本*/
-    int  shm_key;                       /*共享内存ID*/
-    int  sem_key;
-    char prog_name[128];
-
-    char hw_trsmt_ip[16];               /*华为转发接口ip*/
-    int  hw_trsmt_port;                 /*华为转发接口端口*/
-    char zte_trsmt_ip[16];              /*中兴转发接口ip*/
-    int  zte_trsmt_port;                /*中兴转发接口端口*/
-
-    struct PORT_CONF port_list[MAX_PORT_NUM];
-    int  port_num;
-    int  proc_num;
-};
-
-struct AUTH_IPNET
-{
-    int  is_authip;                     /*是否进行鉴权 1进行 0否，默认1*/
-    char auth_ip[MAX_AUTH_IP_NUM][64];  /*鉴权IP*/
-    int  auth_num;                      /*鉴权IP数量*/
-};
-
-
+#ifndef _MY_GLOBAL_H_
+#define _MY_GLOBAL_H_
 #endif
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <dirent.h>
+#include <time.h>
+#include <errno.h>
+#include <ctype.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <termio.h>
+#include <netdb.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/ipc.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <locale.h>
+#include <oci.h>
+
+/*自定义头文件*/
+#include "Define.h"
+#include "Tools.h"
+
+
+
+/**TuxClient.h*/
+extern int ShmConfCheck();
+extern int GetRunCount();
+extern int GetPortShm(int port, struct SHM_CONF ** port_shm);
+extern int GetInitInfo(const char * file_name);
+extern void InitShm();
+extern void FreeShm(int _shm_id);
+extern void StopClient(const char * prog_name, int port);
+extern void QueryClient(const char * prog_name);
+extern void RefreshParam(const char * prog_name, int port);
+
+/**Tools.h*/
+extern int shell_command(const char *cmd, char *retbuff);
+extern int ltrim(char *str);
+extern int rtrim(char *str);
+extern int trim(char *str);
+extern void replace2(char *s_str, const char *ing_str, int start, int len);
+extern void replace1(char *s_str, const char *ing_str, const char *ed_str);
+extern void str_lower(char *str);
+extern void str_upper(char *str);
+extern void get_cur_time(const char * _format, char * time_buff);
+extern void sub_str(char *s_str, char *t_str, int addr, int len, int type);
+extern void split_str(char *s_str, char *t_str, const char *sp_str, int num, int type, int type1, int dect);
+extern void reverse(char *str);
+
+/*Socket.h*/
+extern int gethostinfo(char *name, char *address);
+extern int link_remote(const char *remote_ip, int remote_port, const char *local_ip);
+extern int send_data(const char *snd_buffer, int snd_size, int sock_fd);
+extern int recv_data1(char *rcv_buffer, int rcv_size, int out_time, int sock_fd);
+extern int recv_data2(char *rcv_buffer, int seg_size, int out_time, const char * stop_flag, int sock_fd);
+extern void linker_cut(int sock_fd, int type);
+extern int get_sock_info(int sock_fd, char *ip_info, int *port_info);
+extern int get_perer_info(int sock_fd, char *ip_info, int *port_info);
+extern int create_listen(int _port, int max_link, int non_block, int reuse_addr);
+extern int startup_listen(int sock_fd, int out_time);
+
+/*SemTools.h*/
+extern int sem_requ(int sem_key, int sem_num, int _value);
+extern int sem_get(int sem_key, int sem_num);
+extern int sem_free();
+extern int sem_oper(int sem_no, int _values);
+
+/*RecDeal.h*/
+extern void catch_all_singal();
+extern void LsnrRec(int port, int serial_no, int socket_fd);
+
+/*OracleDB.h*/
+extern int DB_ConnectDB1(const char *user_name, const char *password, const char *db_id);
+extern int  DB_DisconnectDB();
+extern int  DB_DisconnectDB1();
+extern int  DB_OCIBindSTR_A(int iStmthp, int iCount, const char *sql_var, char *sVar,int iVarLen);
+extern int  DB_OCIBindSTR_B(int iStmthp, int iCount, char *sVar,int iVarLen);
+extern int  DB_OCIBindINT_A(int iStmthp, int iCount, const char *sql_var, int *iVar);
+extern int  DB_OCIBindINT_B(int iStmthp, int iCount, int *iVar);
+extern int  DB_OCIPrepare(int iStmthp, char *ProcSql);
+extern int  DB_OCIExec(int iStmthp, int type);
+extern int  DB_OCIFetch(int iStmthp, int FetchNum);
+extern void DB_report_error(OCIError *errhp);
+extern int DB_SelectRecordBind(char *name,int *nPid, char *mycommand, int nLencmd,
+    char *register_number, int nLenreg, char *card_sn, int cardSnLen, int *product_num, int *apply_event,char *error_code,int nLenError);
+extern int  DB_SelectRecord();
+extern int  DB_ModifyRecordStatus(char *name,char *register_number,int nLenreg, char *why, int nLenWhy, int *pick_status);
+extern int  DB_CallBackRecord();
+extern int  DB_ExecuteSQL(unsigned char *sql);
+extern int  DB_ReadRollbackCommand();
+
+

@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 #include "TuxClient.h"
-#include "tools.h"
+#include "Tools.h"
 #include "log.h"
 
 extern char * G_shm;

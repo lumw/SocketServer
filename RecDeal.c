@@ -1,15 +1,9 @@
 #include <sys/wait.h>
-
-//#include "atmi.h"
 #include "log.h"
 #include "Global.h"
-#include "plugin.h"
-//#include "trade.h"
-//#include "ctrl_data.h"
-//#include "h2_info.h"
+#include "Define.h"
 #include "RecDeal.h"
 #include "SemTools.h"
-#include "Transmit.h"
 
 extern struct INIT_CONF   G_ini;
 extern char * G_trans_buffer;
@@ -335,7 +329,7 @@ int RespDeal(char *buff, int len, int sub_sockfd, int is_rec)
 
     RegProcActive("RESP", 0);
 
-    len = MakeRespPkg(buff, len);
+    //len = MakeRespPkg(buff, len);
 
     if (is_rec == 1)
         WriteLog(cur_port, cur_serial, OUT_ULOG, "反馈数据[%d][%s]", len, buff);
@@ -381,7 +375,7 @@ void DealOnRec(int sub_sockfd)
     WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据[%d][%s]", nlen, buffer);
 
 
-    len = DealRecvPkg(G_trans_buffer, nlen);
+    //len = DealRecvPkg(G_trans_buffer, nlen);
     if (nlen <= 0)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据错误");

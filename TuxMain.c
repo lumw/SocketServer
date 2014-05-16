@@ -287,7 +287,6 @@ int main(int argc, char *argv[])
         }
 
         WriteLog(0, 0, OUT_SCREEN, "\nÆô¶¯:%s½Ó¿Ú,port=[%d]", G_ini.port_list[i].name, G_ini.port_list[i].lsnr_port);
-        printf("G_ini.port_list[i].lsnr_len = %d\n", G_ini.port_list[i].lsnr_len);
         nret = StartPort(G_ini.port_list[i].lsnr_port, G_ini.port_list[i].lsnr_num, G_ini.port_list[i].lsnr_len, G_ini.port_list[i].is_reuse_addr);
 
         FreeResource();

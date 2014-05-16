@@ -53,8 +53,9 @@
 #include <unistd.h>
 #include <strings.h>
 #include <time.h>
+
 #include "socket_api.h"
-#include "tools.h"
+#include "Global.h"
 
 int gethostinfo(char *name, char *address)
 {
