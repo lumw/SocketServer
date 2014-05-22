@@ -374,13 +374,14 @@ void DealOnRec(int sub_sockfd)
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据[%d][%s]", nlen, buffer);
 
-
-    //len = DealRecvPkg(G_trans_buffer, nlen);
     if (nlen <= 0)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据错误");
         return ;
     }
+
+    /**调用业务处理函数，进行数据处理*/
+
 
     nlen = RespDeal("hello world", 11, sub_sockfd, 1);
 
@@ -509,7 +510,6 @@ int verfiy_socket(int _sock_fd)
     return -1;
 }
 
-/*add by renqw 2007.07.26 begin*/
 /**
  * 判断客户端的连接数是否超过最大连接数
  * 1:没有超过 0:超过
@@ -608,6 +608,8 @@ void FreeCurPortUsed()
  **************************************************************************************************/
 void LsnrRec(int port, int serial_no, int socket_fd)
 {
+    ConnectDB("system", "oracle", "orcl");
+
     char buffer[64];
     int  i, sub_sockfd;
 

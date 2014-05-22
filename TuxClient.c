@@ -31,7 +31,7 @@ void InitShm()
         shm_conf[i].run_status = RUN_STATUS_STOPED;                 /*进程运行状态*/
         shm_conf[i].proc_id = 0;
         shm_conf[i].deal_num = 0;
-        shm_conf[i].is_used = 0;    /*add by renqw 2007.07.26*/
+        shm_conf[i].is_used = 0;
         strcpy(shm_conf[i].start_time, "");
         strcpy(shm_conf[i].cur_active, "");
         strcpy(shm_conf[i].last_time, "");

@@ -1,7 +1,7 @@
 #ifndef _TUXEDO_REALINTF_TOOLS_INCLUDE_
 #define _TUXEDO_REALINTF_TOOLS_INCLUDE_
 
-#define LINUX_HOST 
+#define LINUX_HOST
 int gethostinfo(char *name, char *address);
 int link_remote(const char *remote_ip, int remote_port, const char *local_ip);
 int send_data(const char *snd_buffer, int snd_size, int sock_fd);

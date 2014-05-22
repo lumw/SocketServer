@@ -45,7 +45,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <stropts.h>
+//#include <stropts.h>
 #include <netdb.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -195,7 +195,6 @@ int recv_data1(char *rcv_buffer, int rcv_size, int out_time, int sock_fd)
     {
         return 0;
     }
-    printf("1\n");
     return rcved_size;
 }
 

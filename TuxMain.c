@@ -31,9 +31,7 @@ void FreeResource()
     G_ctrl_data = NULL;
 }
 
-/*
-int StartPort(int port, int lnr_num, int is_reused)
-*/
+
 int StartPort(int port, int lnr_num, int lnr_len, int is_reused)
 {
     int count, i, socket_fd;
@@ -270,6 +268,9 @@ int main(int argc, char *argv[])
         }
         return 0;
     }
+
+
+
 
     /****************************************************************************************/
     count = 0;
