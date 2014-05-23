@@ -9,13 +9,38 @@ Author   : the.lumw@gmail.com
 1       2014-05-22          the.lumw@gmail.com          创建版本
 ********************************************************************************************************/
 
-#include "OracleDB.h"
-#include "ocilib.h"
 
-OCI_Connection *conn;
-OCI_Statement  *stmt;
-OCI_Error      *err;
-OCI_Resultset  *rs;
+#include "ocilib.h"
+#include "OracleDB.h"
+#include "Global.h"
+
+
+OCI_Connection *conn = NULL;
+OCI_Statement  *stmt = NULL;
+OCI_Error      *err  = NULL;
+OCI_Resultset  *rs   = NULL;
+
+
+
+/****************************************************************************************************
+函数功能:数据库错误记录函数
+参数说明:
+    const char *userName    用户名
+    const char *password    口令
+    const char *sid         数据库实例名
+输出说明:
+****************************************************************************************************/
+void err_handler(OCI_Error *err)
+{
+    printf(
+               "code  : ORA-%05i\n"
+               "msg   : %s\n"
+               "sql   : %s\n",
+               OCI_ErrorGetOCICode(err),
+               OCI_ErrorGetString(err),
+               OCI_GetSql(OCI_ErrorGetStatement(err))
+           );
+}
 
 
 /****************************************************************************************************
@@ -25,19 +50,18 @@ OCI_Resultset  *rs;
     const char *password    口令
     const char *sid         数据库实例名
 输出说明:
-
 ****************************************************************************************************/
 int ConnectDB(const char* userName, const char* password, const char* sid)
 {
 
-    if( !OCI_Initialize(NULL, NULL, OCI_ENV_DEFAULT) )
+    if( !OCI_Initialize(err_handler, NULL, OCI_ENV_DEFAULT) )
     {
-        return EXIT_FAILURE;
+        return ERROR;
     }
 
     conn = OCI_ConnectionCreate(sid, userName, password, OCI_SESSION_DEFAULT);
 
-    return EXIT_SUCCESS;
+    return conn == NULL ? ERROR : RIGHT;
 }
 
 
@@ -51,7 +75,7 @@ int ConnectDB(const char* userName, const char* password, const char* sid)
 int DisConnectDB()
 {
     OCI_Cleanup();
-    return EXIT_SUCCESS;
+    return RIGHT;
 }
 
 
@@ -60,14 +84,22 @@ int DisConnectDB()
 参数说明:
 
 输出说明:
-
+        RIGHT 合法
+        ERROR 不合法
 ****************************************************************************************************/
 int check_terminal_legality(const char* terminalID)
 {
     stmt = OCI_StatementCreate(conn);
 
-    OCI_Prepare(st, "");
+    OCI_Prepare(stmt, "SELECT TO_CHAR(SYSDATE) FROM DUAL");
 
+    OCI_Execute(stmt);
 
+    rs = OCI_GetResultset(stmt);
+
+    while( OCI_FetchNext(rs) )
+    {
+        printf("%s\n", OCI_GetString(rs, 1));
+    }
 }
 

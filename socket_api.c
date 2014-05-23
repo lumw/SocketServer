@@ -45,7 +45,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-//#include <stropts.h>
 #include <netdb.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -430,7 +429,7 @@ int create_listen(int _port, int max_link, int non_block, int reuse_addr)
         max_link = 1;
     }
 
-    if (listen(sock_fd, max_link) != 0)
+    if (listen(sock_fd, 100) != 0)
     {
         linker_cut(sock_fd, 0);
         return -1;

@@ -84,4 +84,5 @@ extern void LsnrRec(int port, int serial_no, int socket_fd);
 
 /*OracleDB.h*/
 extern int ConnectDB(const char* userName, const char* password, const char* sid);
+extern int DisConnectDB();
 

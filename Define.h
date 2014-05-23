@@ -37,10 +37,8 @@ struct PORT_CONF
     int  lsnr_num;                      /*监听数量*/
     int  lsnr_len;                      /*监听队列长度*/
     int  out_time;                      /*超时时间(秒)*/
-    int  system_id;                     /*系统ID*/
     int  is_reuse_addr;                 /*是否重用监听端口*/
-    int  is_rec_follow;                 /*是否记录后续包*/
-    int  is_long_link;                  /*是否是常连接*/
+    int  is_long_link;                  /*是否是长连接*/
     int  is_debug;                      /*调试开关*/
 };
 
@@ -50,11 +48,6 @@ struct INIT_CONF
     int  shm_key;                       /*共享内存ID*/
     int  sem_key;
     char prog_name[128];
-
-    char hw_trsmt_ip[16];               /*华为转发接口ip*/
-    int  hw_trsmt_port;                 /*华为转发接口端口*/
-    char zte_trsmt_ip[16];              /*中兴转发接口ip*/
-    int  zte_trsmt_port;                /*中兴转发接口端口*/
 
     struct PORT_CONF port_list[MAX_PORT_NUM];
     int  port_num;

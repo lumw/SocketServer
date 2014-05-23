@@ -382,7 +382,7 @@ void DealOnRec(int sub_sockfd)
 
     /**调用业务处理函数，进行数据处理*/
 
-
+    check_terminal_legality("1");
     nlen = RespDeal("hello world", 11, sub_sockfd, 1);
 
 }
@@ -608,7 +608,8 @@ void FreeCurPortUsed()
  **************************************************************************************************/
 void LsnrRec(int port, int serial_no, int socket_fd)
 {
-    ConnectDB("system", "oracle", "orcl");
+
+
 
     char buffer[64];
     int  i, sub_sockfd;
@@ -628,6 +629,13 @@ void LsnrRec(int port, int serial_no, int socket_fd)
     RegProcActive("IDLE", 0);
 
     ReadAuthIP();
+
+    if( ConnectDB("patrol", "patrol", "patrol") == ERROR )
+    {
+        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接失败", (int)getpid());
+    }
+
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接成功", (int)getpid());
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d],sn=[%d],socket=[%d]:开始接收客户端请求", (int)getpid(), serial_no, socket_fd);
 
@@ -683,7 +691,6 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
         while (cur_shm[serial_no].run_status == RUN_STATUS_RUNNING)
         {
-            WriteLog(cur_port, cur_serial, OUT_ULOG, "开始执行DealOnRec");
             DealOnRec(sub_sockfd);
             if (G_ini.port_list[ini_addr].is_long_link == 0)
             {
@@ -704,4 +711,9 @@ void LsnrRec(int port, int serial_no, int socket_fd)
     strcpy(cur_shm[serial_no].start_time, "");
     strcpy(cur_shm[serial_no].cur_active, "");
     strcpy(cur_shm[serial_no].last_time, "");
+
+    if( DisConnectDB() == RIGHT )
+    {
+        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 断开数据库连接成功", (int)getpid());
+    }
 }
