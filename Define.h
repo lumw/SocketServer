@@ -37,10 +37,8 @@ struct PORT_CONF
     int  lsnr_num;                      /*监听数量*/
     int  lsnr_len;                      /*监听队列长度*/
     int  out_time;                      /*超时时间(秒)*/
-    int  system_id;                     /*系统ID*/
     int  is_reuse_addr;                 /*是否重用监听端口*/
-    int  is_rec_follow;                 /*是否记录后续包*/
-    int  is_long_link;                  /*是否是常连接*/
+    int  is_long_link;                  /*是否是长连接*/
     int  is_debug;                      /*调试开关*/
 };
 
@@ -50,11 +48,6 @@ struct INIT_CONF
     int  shm_key;                       /*共享内存ID*/
     int  sem_key;
     char prog_name[128];
-
-    char hw_trsmt_ip[16];               /*华为转发接口ip*/
-    int  hw_trsmt_port;                 /*华为转发接口端口*/
-    char zte_trsmt_ip[16];              /*中兴转发接口ip*/
-    int  zte_trsmt_port;                /*中兴转发接口端口*/
 
     struct PORT_CONF port_list[MAX_PORT_NUM];
     int  port_num;
@@ -66,6 +59,28 @@ struct AUTH_IPNET
     int  is_authip;                     /*是否进行鉴权 1进行 0否，默认1*/
     char auth_ip[MAX_AUTH_IP_NUM][64];  /*鉴权IP*/
     int  auth_num;                      /*鉴权IP数量*/
+};
+
+
+
+/***********发送、接收数据结构体*****************/
+
+
+/*GPS数据报文，非结构体内存对齐*/
+#pragma pack(1)
+struct GPS_INFO
+{
+    char msg_type;                   /*报文类型*/
+    char msg_version;                /*报文版本号*/
+    char msg_command;                /*协议命令字*/
+    char gps_msg_length[4];          /*GPS数据信息总长度*/
+    char device_type;                /*设备类型*/
+    char device_id[33];              /*设备编号*/
+    char x_coordinate[8];            /*X坐标*/
+    char Y_coordinate[8];            /*Y坐标*/
+    char height[8];                  /*高度*/
+    char speed[8];                   /*速度*/
+    char direction[8];               /*方向*/
 };
 
 

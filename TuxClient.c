@@ -490,22 +490,6 @@ int main_ini(const char * item_name, const char *item_value)
     {
         G_ini.sem_key = atoi(item_value);
     }
-    else if (strcmp(item_name, "hw_trsmt_ip") == 0)
-    {
-        strcpy(G_ini.hw_trsmt_ip, item_value);
-    }
-    else if (strcmp(item_name, "hw_trsmt_port") == 0)
-    {
-        G_ini.hw_trsmt_port = atoi(item_value);
-    }
-    else if (strcmp(item_name, "zte_trsmt_ip") == 0)
-    {
-        strcpy(G_ini.zte_trsmt_ip, item_value);
-    }
-    else if (strcmp(item_name, "zte_trsmt_port") == 0)
-    {
-        G_ini.zte_trsmt_port = atoi(item_value);
-    }
 
     return 0;
 }
@@ -542,17 +526,9 @@ int tns_ini(const char * item_name, const char *item_value)
     {
         G_ini.port_list[sn].out_time = atoi(item_value);
     }
-    else if (strcmp(item_name, "system_id") == 0)
-    {
-        G_ini.port_list[sn].system_id = atoi(item_value);
-    }
     else if (strcmp(item_name, "is_reuse_addr") == 0)
     {
         G_ini.port_list[sn].is_reuse_addr = atoi(item_value);
-    }
-    else if (strcmp(item_name, "is_rec_follow") == 0)
-    {
-        G_ini.port_list[sn].is_rec_follow = atoi(item_value);
     }
     else if (strcmp(item_name, "is_long_link") == 0)
     {
