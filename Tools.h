@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 #ifndef _MY_TOOLS_H_INCLUDE_
 #define _MY_TOOLS_H_INCLUDE_
+=======
+#ifndef _MY_TOOLS_INCLUDE_
+#define _MY_TOOLS_INCLUDE_
+>>>>>>> 985ee7c5807346a4845a203c6b3799b3efc99a8a
 
 int shell_command(const char *cmd, char *retbuff);
 int ltrim(char *str);
