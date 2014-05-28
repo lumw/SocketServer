@@ -13,7 +13,7 @@ MAKEEXE= $(CC) $(LDFLAGS) $(OCISHAREDLIBS)
 
 .SUFFIXES: .o .cob .for .c
 
-EXE=tux_cli_cus
+EXE=sock_server
 
 MAIN_OBJ=TuxMain.o socket_api.o TuxClient.o log.o RecDeal.o OracleDB.o Tools.o SemTools.o
 

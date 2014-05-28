@@ -379,11 +379,7 @@ void DealOnRec(int sub_sockfd)
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文长度[%d] 内容[%s]", recv_len, recv_buffer);
     /**调用业务处理函数，进行数据处理*/
-    /**
-    struct GPS_INFO *gps_info;
-    printf("--%d--\n", sizeof(struct GPS_INFO));
-    memcpy((char *)gps_info, recv_buffer, sizeof(struct GPS_INFO));
-   */
+
 
     char msg_type[2];
     memcpy(msg_type, recv_buffer, 1);
@@ -394,10 +390,10 @@ void DealOnRec(int sub_sockfd)
     char msg_command[2];
     memcpy(msg_command, recv_buffer+2, 1);
 
-    //WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%c] 报文版本号[%c] 协议命令字[%c]", gps_info->msg_type, gps_info->msg_version, gps_info->msg_command);
-    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%c] 报文版本号[%c] 协议命令字[%c]", msg_type, msg_version, msg_command);
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%s] 报文版本号[%s] 协议命令字[%s]", msg_type, msg_version, msg_command);
 
     gps_info_insert(recv_buffer);
+
 
     //check_terminal_legality("1");
     nlen = RespDeal("hello world", 11, sub_sockfd, 1);
