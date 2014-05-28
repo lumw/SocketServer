@@ -1,5 +1,5 @@
-#ifndef _MY_GLOBAL_H_
-#define _MY_GLOBAL_H_
+#ifndef _MY_GLOBAL_H_INCLUDE_
+#define _MY_GLOBAL_H_INCLUDE_
 #endif
 
 

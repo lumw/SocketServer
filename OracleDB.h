@@ -1,5 +1,5 @@
-#ifndef _MY_ORACLEDB_H_
-#define _MY_ORACLEDB_H_
+#ifndef _MY_ORACLEDB_H_INCLUDE_
+#define _MY_ORACLEDB_H_INCLUDE_
 
 
 

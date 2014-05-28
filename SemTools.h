@@ -1,5 +1,5 @@
-#ifndef _SEMTOOLS_INCLUDE_H_
-#define _SEMTOOLS_INCLUDE_H_
+#ifndef _SEMTOOLS_H_INCLUDE_
+#define _SEMTOOLS_H_INCLUDE_
 
 #define SEM_ERROR 0
 #define SEM_RIGHT 1

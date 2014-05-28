@@ -1,5 +1,5 @@
-#ifndef _LOG_H_
-#define _LOG_H_
+#ifndef _LOG_H_INCLUDE_
+#define _LOG_H_INCLUDE_
 
 
 /**/

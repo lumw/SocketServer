@@ -1,7 +1,7 @@
 #include <sys/wait.h>
 #include "log.h"
 #include "Global.h"
-#include "Define.h"
+//#include "Define.h"
 #include "RecDeal.h"
 #include "SemTools.h"
 
@@ -359,9 +359,9 @@ int RespDeal(char *buff, int len, int sub_sockfd, int is_rec)
 
 void DealOnRec(int sub_sockfd)
 {
-    //struct trade cur_trans;
+
     int  nlen, len;
-    char buffer[512], svc_name[512];
+    char recv_buffer[512], svc_name[512];
     int  flag;
     int  trsmt_sn = -1;
     int  trsmt_ret = -1;
@@ -370,19 +370,36 @@ void DealOnRec(int sub_sockfd)
     RegProcActive("RECV", 1);
 
 
-    nlen = recv_data1(buffer, recv_len, G_ini.port_list[ini_addr].out_time, sub_sockfd);
-
-    WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据[%d][%s]", nlen, buffer);
-
+    nlen = recv_data1(recv_buffer, recv_len, G_ini.port_list[ini_addr].out_time, sub_sockfd);
     if (nlen <= 0)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据错误");
         return ;
     }
 
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文长度[%d] 内容[%s]", recv_len, recv_buffer);
     /**调用业务处理函数，进行数据处理*/
+    /**
+    struct GPS_INFO *gps_info;
+    printf("--%d--\n", sizeof(struct GPS_INFO));
+    memcpy((char *)gps_info, recv_buffer, sizeof(struct GPS_INFO));
+   */
 
-    check_terminal_legality("1");
+    char msg_type[2];
+    memcpy(msg_type, recv_buffer, 1);
+
+    char msg_version[2];
+    memcpy(msg_version, recv_buffer+1, 1);
+
+    char msg_command[2];
+    memcpy(msg_command, recv_buffer+2, 1);
+
+    //WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%c] 报文版本号[%c] 协议命令字[%c]", gps_info->msg_type, gps_info->msg_version, gps_info->msg_command);
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%c] 报文版本号[%c] 协议命令字[%c]", msg_type, msg_version, msg_command);
+
+    gps_info_insert(recv_buffer);
+
+    //check_terminal_legality("1");
     nlen = RespDeal("hello world", 11, sub_sockfd, 1);
 
 }
@@ -630,12 +647,13 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
     ReadAuthIP();
 
-    if( ConnectDB("patrol", "patrol", "patrol") == ERROR )
+    if( ConnectDB("dev_user", "dev_user", "orcl") == ERROR )
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接失败", (int)getpid());
     }
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接成功", (int)getpid());
+
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d],sn=[%d],socket=[%d]:开始接收客户端请求", (int)getpid(), serial_no, socket_fd);
 
@@ -717,3 +735,6 @@ void LsnrRec(int port, int serial_no, int socket_fd)
         WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 断开数据库连接成功", (int)getpid());
     }
 }
+
+
+

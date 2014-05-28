@@ -1,5 +1,5 @@
-#ifndef _MY_DEFINE_H_
-#define _MY_DEFINE_H_
+#ifndef _MY_DEFINE_H_INCLUDE_
+#define _MY_DEFINE_H_INCLUDE_
 
 #define MAX_AUTH_IP_NUM     20
 #define MAX_PORT_NUM        100
@@ -59,6 +59,28 @@ struct AUTH_IPNET
     int  is_authip;                     /*是否进行鉴权 1进行 0否，默认1*/
     char auth_ip[MAX_AUTH_IP_NUM][64];  /*鉴权IP*/
     int  auth_num;                      /*鉴权IP数量*/
+};
+
+
+
+/***********发送、接收数据结构体*****************/
+
+
+/*GPS数据报文，非结构体内存对齐*/
+#pragma pack(1)
+struct GPS_INFO
+{
+    char msg_type;                   /*报文类型*/
+    char msg_version;                /*报文版本号*/
+    char msg_command;                /*协议命令字*/
+    char gps_msg_length[4];          /*GPS数据信息总长度*/
+    char device_type;                /*设备类型*/
+    char device_id[33];              /*设备编号*/
+    char x_coordinate[8];            /*X坐标*/
+    char Y_coordinate[8];            /*Y坐标*/
+    char height[8];                  /*高度*/
+    char speed[8];                   /*速度*/
+    char direction[8];               /*方向*/
 };
 
 

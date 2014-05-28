@@ -1,5 +1,5 @@
-#ifndef _TUXEDO_REALINTF_TOOLS_INCLUDE_
-#define _TUXEDO_REALINTF_TOOLS_INCLUDE_
+#ifndef _MY_TOOLS_H_INCLUDE_
+#define _MY_TOOLS_H_INCLUDE_
 
 int shell_command(const char *cmd, char *retbuff);
 int ltrim(char *str);
