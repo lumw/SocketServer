@@ -233,7 +233,7 @@
 			<F
 				N="../makefile"
 				Type="Makefile"/>
-			<F N="../tux_cli_cus.ini"/>
+			<F N="../sock_server.ini"/>
 		</Folder>
 	</Files>
 </Project>

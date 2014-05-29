@@ -199,7 +199,6 @@ int sem_oper(int sem_no, int _values)
     if (semop(gi_sem_id, &sbParam, 1) < 0)
     {
         sprintf(gs_sem_err, "semop[sem_no=%d][value=%d] fail,error(%d):%s", sem_no, _values, errno, strerror(errno));
-        //printf(gs_sem_err);
         return SEM_ERROR;
     }
 

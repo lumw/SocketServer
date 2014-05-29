@@ -155,8 +155,3 @@ int gps_info_insert(const char *gps_info)
 
     OCI_StatementFree(stmt);
 }
-
-int DB_Commit()
-{
-    OCI_Commit(conn);
-}

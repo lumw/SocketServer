@@ -112,6 +112,8 @@ int StartPort(int port, int lnr_num, int lnr_len, int is_reused)
     return 0;
 }
 
+
+
 int main(int argc, char *argv[])
 {
     char buffer[512], prog_name[512], sTemp[256];
@@ -130,12 +132,9 @@ int main(int argc, char *argv[])
     split_str(buffer, prog_name, "/", 1, 1, 1, 1);
 
     /*检测程序是否已经在后台运行*/
-    char command[256];
-    sprintf(command, "ps -ef | grep -v \\\\-csh | grep -v \\\\.sh | grep -v ps | grep -v grep |grep -v vi | grep -c %s", prog_name);
-    shell_command(command, sTemp);
     if (strcmp(argv[1], "start") != 0)
     {
-        if (atoi(sTemp) <= 1)
+        if ( !if_program_running(prog_name) )
         {
             WriteLog(0, 0, OUT_SCREEN, "系统尚未启动");
             return 0;
@@ -198,7 +197,6 @@ int main(int argc, char *argv[])
     if (G_shm == (void *)-1)
     {
         WriteLog(0, 0, OUT_SCREEN, " shmat error(%d):%s", errno, strerror(errno));
-        //shmctl(shm_id, IPC_RMID, 0);
         FreeShm(shm_id);
         return 0;
     }

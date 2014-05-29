@@ -4,7 +4,26 @@
 #include <time.h>
 #include "Tools.h"
 
-int shell_command(const char *cmd, char *retbuff)
+
+int if_program_running(const char *progName)
+{
+    char retBuff[256];
+    char shellCommand[1024];
+
+
+    sprintf(shellCommand, "ps -ef | grep -v \\\\-csh | grep -v \\\\.sh | grep -v ps | grep -v grep |grep -v vi | grep -c %s", progName);
+
+    exec_shell_command(shellCommand, retBuff)
+
+    if ( atoi(retBuff) >= 1)
+        return TRUE;
+    else
+        return FALSE;
+
+}
+
+
+int exec_shell_command(const char *cmd, char *retbuff)
 {
     char buf[1024];
     FILE *ptr;
@@ -12,10 +31,9 @@ int shell_command(const char *cmd, char *retbuff)
     strcpy(retbuff, "");
 
     ptr = popen(cmd, "r");
-    if(ptr == NULL)
-        return -1;
+    if ( ptr == NULL ) return -1;
 
-    while(fgets(buf, sizeof(buf), ptr) != NULL)
+    while (fgets(buf, sizeof(buf), ptr) != NULL)
     {
         /* fprintf(stderr, "[%s]\n", buf); */
         break;
@@ -33,16 +51,14 @@ int ltrim(char *str)
     int j, i = 0, len;
 
     len = (int)strlen(str);
-    if(len == 0)
-        return 0;
+    if ( len == 0 ) return 0;
 
-    while(i < len  && strchr(ptr, str[i]) != NULL)
+    while (i < len  && strchr(ptr, str[i]) != NULL)
     {
         i++;
     }
 
-    for(j = i ; j <= len ; j++)
-        str[j - i] = str[j];
+    for (j = i; j <= len; j++) str[j - i] = str[j];
 
     return (int)strlen(str);
 }
@@ -52,7 +68,7 @@ int rtrim(char *str)
     char *ptr = " \r\n\x9";
     int i = (int)strlen(str) - 1;
 
-    while(i > 0  && strchr(ptr, str[i]) != NULL)
+    while (i > 0  && strchr(ptr, str[i]) != NULL)
     {
         i--;
     }
@@ -77,31 +93,27 @@ void replace2(char *s_str, const char *ing_str, int start, int len)
     int i, ing_len;
 
     nlen = (int)strlen(s_str);
-    if(start <= 0)
-        start = 0;
-    if(start >= nlen)
-        start = nlen;
-    if(len <= 0)
-        len = 0;
+    if ( start <= 0 ) start = 0;
+    if ( start >= nlen ) start = nlen;
+    if ( len <= 0 ) len = 0;
 
-    if(start + len >= nlen)
-        len = nlen - start;
+    if ( start + len >= nlen ) len = nlen - start;
 
     ing_len = (int)strlen(ing_str);
 
-    if(len > ing_len)
+    if ( len > ing_len )
     {
         nlen = (int)strlen(s_str + start + len);
 
-        for(i = 0 ; i <= nlen ; i++)
+        for (i = 0; i <= nlen; i++)
         {
             s_str[start + ing_len + i] = s_str[start + len + i];
         }
     }
-    else if(len < ing_len)
+    else if ( len < ing_len )
     {
         nlen = (int)strlen(s_str + start + len);
-        for(i = nlen ; i >=0 ; i--)
+        for (i = nlen; i >= 0; i--)
         {
             s_str[start + ing_len + i] = s_str[start + len + i];
         }
@@ -117,12 +129,11 @@ void replace1(char *s_str, const char *ing_str, const char *ed_str)
     int ing_len = (int)strlen(ing_str);
     int addr = 0;
 
-    if(strcmp(ing_str, ed_str) == 0)
-        return ;
+    if ( strcmp(ing_str, ed_str) == 0 ) return;
 
     addr = (int)strlen(ed_str);
     cur_ptr = strstr(s_str, ing_str);
-    while(cur_ptr != NULL)
+    while (cur_ptr != NULL)
     {
         cur_ptr[0] = 0;
 
@@ -143,10 +154,10 @@ void str_upper(char *str)
     char *cur_ptr;
     unsigned int  i = 0;
 
-    while(i < (int)strlen(str))
+    while (i < (int)strlen(str))
     {
         cur_ptr = strchr(s_ptr, str[i]);
-        if(cur_ptr != NULL)
+        if ( cur_ptr != NULL )
         {
             str[i] = l_ptr[cur_ptr - s_ptr];
         }
@@ -162,10 +173,10 @@ void str_lower(char *str)
     char *cur_ptr;
     unsigned int  i = 0;
 
-    while(i < (int)strlen(str))
+    while (i < (int)strlen(str))
     {
         cur_ptr = strchr(l_ptr, str[i]);
-        if(cur_ptr != NULL)
+        if ( cur_ptr != NULL )
         {
             str[i] = s_ptr[cur_ptr - l_ptr];
         }
@@ -173,18 +184,18 @@ void str_lower(char *str)
     }
 }
 
-void get_cur_time(const char * _format, char * time_buff)
+void get_cur_time(const char *_format, char *time_buff)
 {
     time_t long_time;
     struct tm *dnew;
-    char year[10], month[10], day[10], hour[10], min[10],sec[10];
+    char year[10], month[10], day[10], hour[10], min[10], sec[10];
     char year1[10];
     char buffer[1024];
 
     time(&long_time);
     dnew = localtime(&long_time);
 
-    sprintf(year,   "%04d", dnew->tm_year+1900);
+    sprintf(year,   "%04d", dnew->tm_year + 1900);
     sprintf(year1,  "%c%c", year[2], year[3]);
     sprintf(month,  "%02d", dnew->tm_mon + 1);
     sprintf(day,    "%02d", dnew->tm_mday);
@@ -195,7 +206,7 @@ void get_cur_time(const char * _format, char * time_buff)
     strcpy(buffer, _format);
     str_upper(buffer);
 
-    if(strstr(buffer, "HH24") != NULL)
+    if ( strstr(buffer, "HH24") != NULL )
     {
         replace1(buffer, "YYYY", year);
         replace1(buffer, "YY", year1);
@@ -205,7 +216,7 @@ void get_cur_time(const char * _format, char * time_buff)
         replace1(buffer, "MI", min);
         replace1(buffer, "SS", sec);
     }
-    else if(strstr(buffer, "24HH") != NULL)
+    else if ( strstr(buffer, "24HH") != NULL )
     {
         replace1(buffer, "YYYY", year);
         replace1(buffer, "YY", year1);
@@ -250,11 +261,11 @@ void sub_str(char *s_str, char *t_str, int addr, int len, int type)
     int len1, i, start1;
     int nLen = (int)strlen(s_str);
 
-    if(addr < 0)
+    if ( addr < 0 )
     {
         start1 = 0;
     }
-    else if(addr >= nLen)
+    else if ( addr >= nLen )
     {
         start1 = nLen;
     }
@@ -263,28 +274,26 @@ void sub_str(char *s_str, char *t_str, int addr, int len, int type)
         start1 = addr;
     }
 
-    if(len == 0)
+    if ( len == 0 )
     {
         len1 = nLen;
     }
-    else if(len < 0)
+    else if ( len < 0 )
     {
         start1 = start1 + len + 1;
         len1 = 0 - len;
     }
-    else
-        len1 = len;
+    else len1 = len;
 
-    if(start1 + len1 > nLen)
+    if ( start1 + len1 > nLen )
     {
         len1 = nLen - start1;
     }
 
-    for(i = 0 ; i < len1 ; i++)
-        t_str[i] = s_str[start1+i];
+    for (i = 0; i < len1; i++) t_str[i] = s_str[start1 + i];
     t_str[len1] = 0;
 
-    if(type == 1)
+    if ( type == 1 )
     {
         strcpy(buffer, s_str + start1 + len1);
         s_str[start1] = 0;
@@ -322,37 +331,34 @@ void split_str(char *s_str, char *t_str, const char *sp_str, int num, int type, 
 
     count = 0;
 
-    if(strlen(s_str) == 0)
+    if ( strlen(s_str) == 0 )
     {
         strcpy(t_str, "");
-        return ;
+        return;
     }
 
-    if(num <= 0)
-        num = 1;
+    if ( num <= 0 ) num = 1;
 
     //从左边截取
-    if(dect == 0)
+    if ( dect == 0 )
     {
-        while(cur_ptr != NULL && count != num)
+        while (cur_ptr != NULL && count != num)
         {
-            if(count == 0)
-                last_ptr = cur_ptr;
-            else
-                last_ptr = cur_ptr + strlen(sp_str);
+            if ( count == 0 ) last_ptr = cur_ptr;
+            else last_ptr = cur_ptr + strlen(sp_str);
 
             cur_ptr = strstr(last_ptr, sp_str);
             count++;
         }
 
-        if(count != num)
+        if ( count != num )
         {
             strcpy(t_str, "");
-            return ;
+            return;
         }
 
         /*找到符合条件的子串*/
-        if(cur_ptr != NULL)
+        if ( cur_ptr != NULL )
         {
             tempChar = cur_ptr[0];
             cur_ptr[0] = 0;
@@ -364,29 +370,28 @@ void split_str(char *s_str, char *t_str, const char *sp_str, int num, int type, 
             strcpy(t_str, last_ptr);
         }
 
-        if(cur_ptr == NULL)
+        if ( cur_ptr == NULL )
         {
-            if(type == 1)
+            if ( type == 1 )
             {
                 last_ptr[0] = 0;
             }
         }
         else
         {
-            if(type == 1)
+            if ( type == 1 )
             {
-                if(type1 == 1)
-                    cur_ptr += strlen(sp_str);
+                if ( type1 == 1 ) cur_ptr += strlen(sp_str);
 
 
-                for(i = 0 ; i <= (int)strlen(cur_ptr) ; i++)
+                for (i = 0; i <= (int)strlen(cur_ptr); i++)
                 {
                     last_ptr[i] = cur_ptr[i];
                 }
             }
         }
 
-        return ;
+        return;
     }
 
     strcpy(buffer, sp_str);
@@ -404,12 +409,11 @@ void reverse(char *str)
 {
     char ch;
     int  i, len = (int)strlen(str);
-  int len1;
-    if(len <= 1)
-        return ;
+    int len1;
+    if ( len <= 1 ) return;
 
-  len1 = (len + 1) / 2;
-    for(i = 0 ; i < len1 ; i++)
+    len1 = (len + 1) / 2;
+    for (i = 0; i < len1; i++)
     {
         ch = str[i];
         str[i] = str[len - 1 - i];
