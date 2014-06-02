@@ -377,25 +377,27 @@ void DealOnRec(int sub_sockfd)
         return ;
     }
 
-    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文长度[%d] 内容[%s]", recv_len, recv_buffer);
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 长度[%d] 内容[-%s-]", nlen, recv_buffer);
     /**调用业务处理函数，进行数据处理*/
 
 
-    char msg_type[2];
-    memcpy(msg_type, recv_buffer, 1);
+    char msg_type[2 + 1];
+    memset(msg_type, 0, sizeof(msg_type));
+    memcpy(msg_type, recv_buffer, 2);
 
-    char msg_version[2];
-    memcpy(msg_version, recv_buffer+1, 1);
+    char msg_version[2 + 1];
+    memset(msg_version, 0, sizeof(msg_version));
+    memcpy(msg_version, recv_buffer+2, 2);
 
-    char msg_command[2];
-    memcpy(msg_command, recv_buffer+2, 1);
+    char msg_command[2 + 1];
+    memset(msg_command, 0, sizeof(msg_command));
+    memcpy(msg_command, recv_buffer+9, 2);
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%s] 报文版本号[%s] 协议命令字[%s]", msg_type, msg_version, msg_command);
 
     gps_info_insert(recv_buffer);
 
 
-    //check_terminal_legality("1");
     nlen = RespDeal("hello world", 11, sub_sockfd, 1);
 
 }

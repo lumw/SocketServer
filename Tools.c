@@ -83,6 +83,7 @@ int rtrim(char *str)
 int trim(char *str)
 {
     ltrim(str);
+    rtrim(str);
 
     return rtrim(str);
 }

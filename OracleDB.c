@@ -36,8 +36,7 @@ int CommitCnt = 0;
 ****************************************************************************************************/
 void err_handler(OCI_Error *err)
 {
-    sprintf(
-       oci_error_msg,
+    printf(
        "code  : ORA-%05i\n"
        "msg   : %s\n"
        "sql   : %s\n",
@@ -123,35 +122,87 @@ int gps_info_insert(const char *gps_info)
 
     stmt = OCI_StatementCreate(conn);
     OCI_Prepare(stmt, "insert into t_real_loc(DEVID, XCOORDINATE, YCOORDINATE, HIGH, SPEED, ORIENTATION, CREATEDATE) "
-                "               values(:devID, :xcoordinate, :ycoordinate, :high, :speed, :orientation, sysdate) ");
+                "      values(:devID, :xcoordinate, :ycoordinate, :high, :speed, :orientation, sysdate) ");
 
 
-    char device_id[34];
+    char device_id[6 + 1];
     double x_coordinate;
     double Y_coordinate;
-    float height;
-    float speed;
-    float direction;
+    double height;
+    double speed;
+    double direction;
+
+    char warn_flag[1 + 1];
+    char s_x_coordinate[11 + 1];
+    char s_Y_coordinate[11 + 1];
+    char s_speed[8 + 1];
+    char s_direction[6 + 1];
+    char s_height[6 + 1];
+    char base_station_info1[2 + 1];
+    char base_station_info2[2 + 1];
+    char sent_msg_cnt[4 + 1];
+
+    memset(device_id, 0 , sizeof(device_id));
+    memset(warn_flag, 0 , sizeof(warn_flag));
+    memset(s_x_coordinate, 0 , sizeof(s_x_coordinate));
+    memset(s_Y_coordinate, 0 , sizeof(s_Y_coordinate));
+    memset(s_speed, 0 , sizeof(s_speed));
+    memset(s_direction, 0 , sizeof(s_direction));
+    memset(s_height, 0 , sizeof(s_height));
+    memset(base_station_info1, 0 , sizeof(base_station_info1));
+    memset(base_station_info2, 0 , sizeof(base_station_info2));
+    memset(sent_msg_cnt, 0 , sizeof(sent_msg_cnt));
 
 
-    memcpy(device_id,       gps_info + 6,  2);
-    sscanf(gps_info, "%lf", &x_coordinate);
-    sscanf(gps_info, "%lf", &Y_coordinate);
-    sscanf(gps_info, "%f",  &height);
-    sscanf(gps_info, "%f",  &speed);
-    sscanf(gps_info, "%f",  &direction);
 
+
+    memcpy(device_id,           gps_info + 11, 6);
+    memcpy(warn_flag,           gps_info + 19, 1);
+    memcpy(s_x_coordinate,      gps_info + 20, 11);
+    memcpy(s_Y_coordinate,      gps_info + 31, 11);
+    memcpy(s_speed,             gps_info + 42, 8);
+    memcpy(s_direction,         gps_info + 50, 6);
+    memcpy(s_height,            gps_info + 56, 6);
+    memcpy(base_station_info1,  gps_info + 74, 5);
+    memcpy(base_station_info2,  gps_info + 79, 5);
+    memcpy(sent_msg_cnt,        gps_info + 84, 5);
+
+    trim(s_x_coordinate);
+    trim(s_Y_coordinate);
+    trim(s_height);
+    trim(s_speed);
+    trim(s_direction);
+
+    printf("[%s] [%s] [%s] [%s] [%s]\n", s_x_coordinate, s_Y_coordinate, s_speed, s_direction, s_height );
+
+    sscanf(s_x_coordinate, "%lf",   &x_coordinate);
+    sscanf(s_Y_coordinate, "%lf",   &Y_coordinate);
+    sscanf(s_height,        "%lf",   &height);
+    sscanf(s_speed,         "%lf",   &speed);
+    sscanf(s_direction,     "%lf",   &direction);
+
+    printf("数据转换类型完成\n");
 
     OCI_BindString(stmt, ":devID",        device_id,    sizeof(device_id));
     OCI_BindDouble(stmt, ":xcoordinate",  &x_coordinate);
     OCI_BindDouble(stmt, ":ycoordinate",  &Y_coordinate);
-    OCI_BindFloat(stmt,  ":high",         &height);
-    OCI_BindFloat(stmt,  ":speed",        &speed);
-    OCI_BindFloat(stmt,  ":orientation",  &direction);
+    OCI_BindDouble(stmt,  ":high",         &height);
+    OCI_BindDouble(stmt,  ":speed",        &speed);
+    OCI_BindDouble(stmt,  ":orientation",  &direction);
+
+    printf("数据绑定完成...\n");
 
     OCI_Execute(stmt);
 
+    printf("SQL执行完成...\n");
+
     OCI_Commit(conn);
 
+    printf("SQL提交完成...\n");
+
     OCI_StatementFree(stmt);
+
+    printf("OCI_StatementFree\n");
+
+
 }
