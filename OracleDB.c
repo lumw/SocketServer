@@ -116,7 +116,7 @@ int check_terminal_legality(const char *terminalID)
         RIGHT 合法
         ERROR 不合法
 ****************************************************************************************************/
-int gps_info_insert(const char *gps_info)
+int GPSInfoCommit(const char *gps_info)
 {
 
 
@@ -181,7 +181,7 @@ int gps_info_insert(const char *gps_info)
     sscanf(s_speed,         "%lf",   &speed);
     sscanf(s_direction,     "%lf",   &direction);
 
-    printf("数据转换类型完成\n");
+    //printf("数据转换类型完成\n");
 
     OCI_BindString(stmt, ":devID",        device_id,    sizeof(device_id));
     OCI_BindDouble(stmt, ":xcoordinate",  &x_coordinate);
@@ -190,19 +190,19 @@ int gps_info_insert(const char *gps_info)
     OCI_BindDouble(stmt,  ":speed",        &speed);
     OCI_BindDouble(stmt,  ":orientation",  &direction);
 
-    printf("数据绑定完成...\n");
+    //printf("数据绑定完成...\n");
 
     OCI_Execute(stmt);
 
-    printf("SQL执行完成...\n");
+    //printf("SQL执行完成...\n");
 
     OCI_Commit(conn);
 
-    printf("SQL提交完成...\n");
+    //printf("SQL提交完成...\n");
 
     OCI_StatementFree(stmt);
 
-    printf("OCI_StatementFree\n");
+    //printf("OCI_StatementFree\n");
 
 
 }

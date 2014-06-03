@@ -1,7 +1,6 @@
 #include <sys/wait.h>
 #include "log.h"
 #include "Global.h"
-//#include "Define.h"
 #include "RecDeal.h"
 #include "SemTools.h"
 
@@ -367,8 +366,17 @@ void DealOnRec(int sub_sockfd)
     int  trsmt_ret = -1;
     int  recflag, opercode;
     int  recv_len = 128;
+    char msg_type[2 + 1];
+    char msg_version[2 + 1];
+    char msg_command[2 + 1];
+
+    memset(msg_type, 0, sizeof(msg_type));
+    memset(msg_version, 0, sizeof(msg_version));
+    memset(msg_command, 0, sizeof(msg_command));
+
     RegProcActive("RECV", 1);
 
+    long long start = getCurrmillisecond();
 
     nlen = recv_data1(recv_buffer, recv_len, G_ini.port_list[ini_addr].out_time, sub_sockfd);
     if (nlen <= 0)
@@ -376,29 +384,29 @@ void DealOnRec(int sub_sockfd)
         WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据错误");
         return ;
     }
-
-    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 长度[%d] 内容[-%s-]", nlen, recv_buffer);
-    /**调用业务处理函数，进行数据处理*/
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到数据 长度[%d] 内容[%s]", nlen, recv_buffer);
 
 
-    char msg_type[2 + 1];
-    memset(msg_type, 0, sizeof(msg_type));
-    memcpy(msg_type, recv_buffer, 2);
+    //调用业务处理函数，进行数据处理
+    memcpy(msg_type,    recv_buffer,    2);
+    memcpy(msg_version, recv_buffer+2,  2);
+    memcpy(msg_command, recv_buffer+9,  2);
 
-    char msg_version[2 + 1];
-    memset(msg_version, 0, sizeof(msg_version));
-    memcpy(msg_version, recv_buffer+2, 2);
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "消息类型[%s] 消息版本号[%s] 协议命令字[%s]", msg_type, msg_version, msg_command);
 
-    char msg_command[2 + 1];
-    memset(msg_command, 0, sizeof(msg_command));
-    memcpy(msg_command, recv_buffer+9, 2);
+    if ( strcmp(msg_command, GPS_INFO_UPLOAD_REQ) == 0)
+    {
 
-    WriteLog(cur_port, cur_serial, OUT_ULOG, "收到请求 报文类型[%s] 报文版本号[%s] 协议命令字[%s]", msg_type, msg_version, msg_command);
+        GPSInfoCommit(recv_buffer);
+    }
+    else{
 
-    gps_info_insert(recv_buffer);
+        WriteLog(cur_port, cur_serial, OUT_ULOG, "未识别的消息类型");
+    }
 
+    long long end = getCurrmillisecond();
 
-    nlen = RespDeal("hello world", 11, sub_sockfd, 1);
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "数据已入库,本次处理耗时 %lld ms",  end - start);
 
 }
 
@@ -645,11 +653,10 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
     ReadAuthIP();
 
-    if( ConnectDB("dev_user", "dev_user", "orcl") == ERROR )
+    if( ConnectDB(G_ini.port_list[ini_addr].DBUserName, G_ini.port_list[ini_addr].DBPassword, G_ini.port_list[ini_addr].Sid) == ERROR )
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接失败", (int)getpid());
     }
-
     WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接成功", (int)getpid());
 
 

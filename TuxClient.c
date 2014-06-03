@@ -516,7 +516,7 @@ int tns_ini(const char *item_name, const char *item_value)
             G_ini.port_list[sn].lsnr_num = 1;
         }
 
-        G_ini.port_list[sn].lsnr_num++; /*add by renqw 2007.07.26*/
+        G_ini.port_list[sn].lsnr_num++;
     }
     else if ( strcmp(item_name, "lsnr_len") == 0 )
     {
@@ -538,6 +538,19 @@ int tns_ini(const char *item_name, const char *item_value)
     {
         G_ini.port_list[sn].is_debug = atoi(item_value);
     }
+    else if ( strcmp(item_name, "DBUserName") == 0 )
+    {
+        strcpy(G_ini.port_list[sn].DBUserName, item_value);
+    }
+    else if ( strcmp(item_name, "DBPassword") == 0 )
+    {
+        strcpy(G_ini.port_list[sn].DBPassword, item_value);
+    }
+    else if ( strcmp(item_name, "Sid") == 0 )
+    {
+        strcpy(G_ini.port_list[sn].Sid, item_value);
+    }
+
     if ( G_ini.port_list[sn].lsnr_len == 0 )
     {
         G_ini.port_list[sn].lsnr_len = G_ini.port_list[sn].lsnr_num;
@@ -598,12 +611,6 @@ int GetInitInfo(const char *file_name)
         else if ( strcmp(buffer, "[TNS]") == 0 )
         {
             flag = 2;
-            G_ini.port_num++;
-            continue;
-        }
-        else if ( strcmp(buffer, "[DBConfig]") == 0 )
-        {
-            flag = 3;
             G_ini.port_num++;
             continue;
         }

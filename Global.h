@@ -1,7 +1,7 @@
 #ifndef _MY_GLOBAL_H_INCLUDE_
 #define _MY_GLOBAL_H_INCLUDE_
-#endif
 
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -59,6 +59,7 @@ extern void get_cur_time(const char * _format, char * time_buff);
 extern void sub_str(char *s_str, char *t_str, int addr, int len, int type);
 extern void split_str(char *s_str, char *t_str, const char *sp_str, int num, int type, int type1, int dect);
 extern void reverse(char *str);
+extern long long getCurrmillisecond();
 
 /*Socket.h*/
 extern int gethostinfo(char *name, char *address);
@@ -85,4 +86,6 @@ extern void LsnrRec(int port, int serial_no, int socket_fd);
 /*OracleDB.h*/
 extern int ConnectDB(const char* userName, const char* password, const char* sid);
 extern int DisConnectDB();
+extern int GPSInfoCommit(const char *gps_info);
+
 

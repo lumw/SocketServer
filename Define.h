@@ -15,6 +15,8 @@
 #define TRUE                1
 #define FALSE               0
 
+#define GPS_INFO_UPLOAD_REQ     " 2"
+
 struct SHM_HEAD
 {
     int  proc_num;
@@ -43,6 +45,9 @@ struct PORT_CONF
     int  is_reuse_addr;                 /*是否重用监听端口*/
     int  is_long_link;                  /*是否是长连接*/
     int  is_debug;                      /*调试开关*/
+    char DBUserName[128];               //数据库连接用户名
+    char DBPassword[128];               //数据库连接口令
+    char Sid[128];                      //数据库实例
 };
 
 struct INIT_CONF
@@ -73,17 +78,20 @@ struct AUTH_IPNET
 #pragma pack(1)
 struct GPS_INFO
 {
-    char msg_type;                   /*报文类型*/
-    char msg_version;                /*报文版本号*/
-    char msg_command;                /*协议命令字*/
-    char gps_msg_length[4];          /*GPS数据信息总长度*/
-    char device_type;                /*设备类型*/
-    char device_id[33];              /*设备编号*/
-    char x_coordinate[8];            /*X坐标*/
-    char Y_coordinate[8];            /*Y坐标*/
-    char height[8];                  /*高度*/
-    char speed[8];                   /*速度*/
-    char direction[8];               /*方向*/
+    char msg_type[2 + 1];               //报文类型
+    char msg_version[2 + 1];            //报文版本号
+    char msg_command[2 + 1];            //协议命令字
+    char gps_msg_length[5 + 1];         //GPS数据信息总长度
+    char device_id[6 + 1];              //设备编号
+    char warn_flag[1 + 1];              //报警标志
+    char x_coordinate[11 + 1];          //X坐标
+    char y_coordinate[11 + 1];          //Y坐标
+    char speed[8 + 1];                  //速度
+    char direction[6 + 1];              //方向
+    char height[6 + 1];                 //高度
+    char base_station_info1[5 + 1];     //基站信息1
+    char base_station_info2[5 + 1];     //基站信息2
+    char sent_msg_cnt[4 + 1];           //当日累计发包个数
 };
 
 

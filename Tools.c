@@ -2,7 +2,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/timeb.h>
 #include "Tools.h"
+#include "Global.h"
 
 
 int if_program_running(const char *progName)
@@ -13,7 +15,7 @@ int if_program_running(const char *progName)
 
     sprintf(shellCommand, "ps -ef | grep -v \\\\-csh | grep -v \\\\.sh | grep -v ps | grep -v grep |grep -v vi | grep -c %s", progName);
 
-    exec_shell_command(shellCommand, retBuff)
+    exec_shell_command(shellCommand, retBuff);
 
     if ( atoi(retBuff) >= 1)
         return TRUE;
@@ -421,4 +423,21 @@ void reverse(char *str)
         str[len - 1 - i] = ch;
     }
 
+}
+
+/*******************************************************************************************************
+函数功能
+    获取当前时间的毫秒数
+输入参数
+
+输出参数
+
+*******************************************************************************************************/
+
+long long getCurrmillisecond()
+{
+    struct timeb t;
+    ftime(&t);
+
+    return 1000 * t.time + t.millitm;
 }

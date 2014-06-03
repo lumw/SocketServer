@@ -14,4 +14,5 @@ void get_cur_time(const char * _format, char * time_buff);
 void sub_str(char *s_str, char *t_str, int addr, int len, int type);
 void split_str(char *s_str, char *t_str, const char *sp_str, int num, int type, int type1, int dect);
 void reverse(char *str);
+long long getCurrmillisecond();
 #endif

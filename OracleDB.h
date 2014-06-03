@@ -5,6 +5,7 @@
 
 int ConnectDB(const char* userName, const char* password, const char* sid);
 int DisConnectDB();
+int GPSInfoCommit(const char *gps_info);
 
 
 #endif
