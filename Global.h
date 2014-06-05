@@ -86,6 +86,8 @@ extern void LsnrRec(int port, int serial_no, int socket_fd);
 /*OracleDB.h*/
 extern int ConnectDB(const char* userName, const char* password, const char* sid);
 extern int DisConnectDB();
+extern int getDBInfo(char *DBInfo);
 extern int GPSInfoCommit(const char *gps_info);
+extern int GPSInfoUpdate(const char *gps_info);
 
 
