@@ -106,8 +106,6 @@ int getDBInfo(char *DBInfo)
                 OCI_GetServerRevisionVersion(conn),
                 OCI_GetVersionConnection(conn)
             );
-
-    return RIGHT;
 }
 
 
@@ -225,20 +223,22 @@ int GPSInfoCommit(const char *gps_info)
     OCI_BindDouble(stmt,  ":orientation",   &direction);
 
 
-    if ( OCI_Execute(stmt) )
+    if ( !OCI_Execute(stmt) )
     {
         return ERROR;
     }
 
-    if ( OCI_Commit(conn) )
+    if ( !OCI_Commit(conn) )
     {
         return ERROR;
     }
 
-    if ( OCI_StatementFree(stmt) )
+    if ( !OCI_StatementFree(stmt) )
     {
         return ERROR;
     }
+
+    return RIGHT;
 
 }
 
@@ -317,18 +317,20 @@ int GPSInfoUpdate(const char *gps_info)
     OCI_BindDouble(stmt,  ":speed",        &speed);
     OCI_BindDouble(stmt,  ":orientation",  &direction);
 
-    //printf("数据绑定完成...\n");
+    if ( !OCI_Execute(stmt) )
+    {
+        return ERROR;
+    }
 
-    OCI_Execute(stmt);
+    if ( !OCI_Commit(conn) )
+    {
+        return ERROR;
+    }
 
-    //printf("SQL执行完成...\n");
+    if ( !OCI_StatementFree(stmt) )
+    {
+        return ERROR;
+    }
 
-    OCI_Commit(conn);
-
-    //printf("SQL提交完成...\n");
-
-    OCI_StatementFree(stmt);
-
-    //printf("OCI_StatementFree\n");
-
+    return RIGHT;
 }

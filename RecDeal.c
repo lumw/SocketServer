@@ -5,8 +5,8 @@
 #include "SemTools.h"
 
 extern struct INIT_CONF   G_ini;
-extern char *G_trans_buffer;
-extern char *G_shm;
+extern char * G_trans_buffer;
+extern char * G_shm;
 
 int cur_port;
 int cur_serial;
@@ -14,7 +14,7 @@ int ini_addr;
 struct AUTH_IPNET auth_ipset;
 struct TRSMT_CONF *G_trsmt_conf;
 
-struct SHM_CONF *cur_shm = NULL;
+struct SHM_CONF * cur_shm = NULL;
 
 /**************************************************************************************************
  *Function Name: RegProcActive
@@ -35,7 +35,7 @@ void RegProcActive(const char *act_name, int add_flag)
     strcpy(cur_shm[cur_serial].cur_active, act_name);
     strcpy(cur_shm[cur_serial].last_time, buffer);
 
-    if ( add_flag == 1 )
+    if (add_flag == 1)
     {
         cur_shm[cur_serial].deal_num++;
     }
@@ -57,17 +57,17 @@ void signal_child(int signal_no)
 
 
     pid = waitpid(0, &status, 0);
-    if ( pid < 0 )
+    if (pid < 0)
     {
         sprintf(buffer, "waitpid error (signal=%d)%d:%s", signal_no, errno, strerror(errno));
         WriteLog(cur_port, cur_serial, OUT_ULOG, buffer);
-        return;
+        return ;
     }
 
     sprintf(buffer, "进程[%d]终止,状态[%d]", (int)pid, status);
     WriteLog(cur_port, cur_serial, OUT_ULOG, buffer);
 
-    if ( WIFEXITED(status) != 0 )     // 子进程正常退出
+    if (WIFEXITED(status) != 0)     // 子进程正常退出
     {
         return;
     }
@@ -253,7 +253,7 @@ void signal_ignore(int _signal_no)
 输出参数：
     0 表示成功 -1表示失败
 **************************************************************************************************/
-int signal_shield(int _signal, void (*sig_func)(int))
+int signal_shield(int _signal, void ( * sig_func )( int ))
 {
     int nRet;
     struct sigaction sig_act;
@@ -264,9 +264,9 @@ int signal_shield(int _signal, void (*sig_func)(int))
     sig_act.sa_handler = sig_func;
     sig_act.sa_flags = 0;
 
-    nRet = sigaction(_signal, &sig_act, (struct sigaction *)0);
+    nRet = sigaction(_signal, &sig_act, (struct sigaction *)0 );
 
-    if ( nRet == 0 )
+    if (nRet == 0)
     {
         return 0;
     }
@@ -330,24 +330,25 @@ int RespDeal(char *buff, int len, int sub_sockfd, int is_rec)
 
     //len = MakeRespPkg(buff, len);
 
-    if ( is_rec == 1 ) WriteLog(cur_port, cur_serial, OUT_ULOG, "反馈数据[%d][%s]", len, buff);
+    if (is_rec == 1)
+        WriteLog(cur_port, cur_serial, OUT_ULOG, "反馈数据[%d][%s]", len, buff);
 
     while (1)
     {
         nlen = send_data(buff, len, sub_sockfd);
-        if ( nlen >= 0 )
+        if (nlen >= 0)
         {
             break;
         }
         sleep(1);
         count++;
-        if ( count >= 2 )
+        if (count >= 2)
         {
             break;
         }
     }
 
-    if ( nlen < 0 )
+    if (nlen < 0)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "反馈数据失败,%d:%s", errno, strerror(errno));
     }
@@ -378,30 +379,34 @@ void DealOnRec(int sub_sockfd)
     long long start = getCurrmillisecond();
 
     nlen = recv_data1(recv_buffer, recv_len, G_ini.port_list[ini_addr].out_time, sub_sockfd);
-    if ( nlen <= 0 )
+    if (nlen <= 0)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "接收数据错误");
-        return;
+        return ;
     }
     WriteLog(cur_port, cur_serial, OUT_ULOG, "收到数据 长度[%d] 内容[%s]", nlen, recv_buffer);
 
 
     //调用业务处理函数，进行数据处理
     memcpy(msg_type,    recv_buffer,    2);
-    memcpy(msg_version, recv_buffer + 2,  2);
-    memcpy(msg_command, recv_buffer + 9,  2);
+    memcpy(msg_version, recv_buffer+2,  2);
+    memcpy(msg_command, recv_buffer+9,  2);
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "消息类型[%s] 消息版本号[%s] 协议命令字[%s]", msg_type, msg_version, msg_command);
 
-    if ( strcmp(msg_command, GPS_INFO_UPLOAD_REQ) == 0 )
+    if ( strcmp(msg_command, GPS_INFO_UPLOAD_REQ) == 0)
     {
 
-        GPSInfoUpdate(recv_buffer);
-        GPSInfoCommit(recv_buffer);
+        if ( GPSInfoUpdate(recv_buffer) == ERROR ){
+            WriteLog(cur_port, cur_serial, OUT_ULOG, "更新实时表出错");
+        }
+
+        if ( GPSInfoCommit(recv_buffer) == ERROR ){
+            WriteLog(cur_port, cur_serial, OUT_ULOG, "写入历史表出错");
+        }
 
     }
-    else
-    {
+    else{
 
         WriteLog(cur_port, cur_serial, OUT_ULOG, "未识别的消息类型");
     }
@@ -425,36 +430,36 @@ void ReadAuthIP()
 
     sprintf(szBuffer, "%s.ini", G_ini.prog_name);
 
-    if ( (fp = fopen(szBuffer, "r")) == NULL )
+    if ((fp = fopen(szBuffer, "r")) == NULL)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "%s Error:(%d)%s", szBuffer, errno, strerror(errno));
-        return;
+        return ;
     }
 
     while (!feof(fp))
     {
         memset(buffer, 0, sizeof(buffer));
-        if ( fgets(buffer, sizeof(buffer), fp) == NULL )
+        if (fgets(buffer, sizeof(buffer), fp) == NULL)
         {
             break;
         }
 
-        if ( trim(buffer) == 0 )
+        if (trim(buffer) == 0)
         {
             continue;
         }
 
-        if ( buffer[0] == '#' )
+        if (buffer[0] == '#')
         {
             continue;
         }
 
-        if ( strcmp(buffer, "[MAIN]") == 0 )
+        if (strcmp(buffer, "[MAIN]") == 0)
         {
             flag = 1;
             continue;
         }
-        else if ( strcmp(buffer, "[TNS]") == 0 )
+        else if (strcmp(buffer, "[TNS]") == 0)
         {
             flag = 2;
             is_need = 0;
@@ -466,26 +471,26 @@ void ReadAuthIP()
         }
 
 
-        if ( flag == 2 )
+        if (flag == 2)
         {
-            if ( strcmp(szBuffer, "lsnr_port") == 0 )
+            if (strcmp(szBuffer, "lsnr_port") == 0)
             {
-                if ( atoi(buffer) == G_ini.port_list[ini_addr].lsnr_port )
+                if (atoi(buffer) == G_ini.port_list[ini_addr].lsnr_port)
                 {
                     is_need = 1;
                 }
             }
         }
 
-        if ( flag == 2 && is_need == 1 )
+        if (flag == 2 && is_need == 1)
         {
-            if ( strcmp(szBuffer, "is_authip") == 0 )
+            if (strcmp(szBuffer, "is_authip") == 0)
             {
                 auth_ipset.is_authip = atoi(buffer);
             }
-            else if ( strcmp(szBuffer, "auth_ip") == 0 )
+            else if (strcmp(szBuffer, "auth_ip") == 0)
             {
-                if ( auth_ipset.auth_num < MAX_AUTH_IP_NUM )
+                if (auth_ipset.auth_num < MAX_AUTH_IP_NUM)
                 {
                     strcpy(auth_ipset.auth_ip[auth_ipset.auth_num], buffer);
                     auth_ipset.auth_num++;
@@ -509,25 +514,25 @@ int verfiy_socket(int _sock_fd)
 
     get_peer_info(_sock_fd, ip_buff, &port_buff);
 
-    if ( G_ini.port_list[ini_addr].is_debug == 1 )
+    if (G_ini.port_list[ini_addr].is_debug == 1)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "监听到[%d][%s:%d]的业务请求...", _sock_fd, ip_buff, port_buff);
     }
 
-    if ( auth_ipset.is_authip == 0 )
+    if (auth_ipset.is_authip == 0)
     {
         return 0;
     }
 
-    for (i = 0; i < auth_ipset.auth_num; i++)
+    for (i = 0 ; i < auth_ipset.auth_num ; i++)
     {
-        if ( strcmp(auth_ipset.auth_ip[i], ip_buff) == 0 )
+        if (strcmp(auth_ipset.auth_ip[i], ip_buff) == 0)
         {
             return 0;
         }
     }
 
-    if ( G_ini.port_list[ini_addr].is_debug == 1 )
+    if (G_ini.port_list[ini_addr].is_debug == 1)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "不合法的外围系统");
     }
@@ -541,13 +546,13 @@ int verfiy_socket(int _sock_fd)
  */
 int IsPortUsed()
 {
-    struct SHM_HEAD *shm_head;
-    struct SHM_CONF *shm_conf;
+    struct SHM_HEAD * shm_head;
+    struct SHM_CONF * shm_conf;
     int i, j, count;
     int id = 0;
     int nret = 1;
 
-    if ( sem_oper(id, -1) == SEM_ERROR )
+    if (sem_oper(id, -1) == SEM_ERROR)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "IsPortUsed:Lock,%s", gs_sem_err);
         return 1;
@@ -559,13 +564,13 @@ int IsPortUsed()
 
     j = 0;
     count = 0;
-    for (i = 0; i < shm_head->proc_num; i++)
+    for (i = 0 ; i < shm_head->proc_num; i++)
     {
-        if ( shm_conf[i].lsnr_port != cur_port )
+        if (shm_conf[i].lsnr_port != cur_port)
         {
             continue;
         }
-        if ( shm_conf[i].is_used == 0 )
+        if (shm_conf[i].is_used == 0)
         {
             continue;
         }
@@ -573,7 +578,7 @@ int IsPortUsed()
     }
     count++;
 
-    if ( G_ini.port_list[ini_addr].lsnr_num == count )
+    if (G_ini.port_list[ini_addr].lsnr_num == count)
     {
         nret = 0;
     }
@@ -582,7 +587,7 @@ int IsPortUsed()
         cur_shm[cur_serial].is_used = 1;
     }
 
-    if ( sem_oper(id, 1) == SEM_ERROR )
+    if (sem_oper(id, 1) == SEM_ERROR)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "IsPortUsed:unLock,%s", gs_sem_err);
     }
@@ -604,7 +609,7 @@ void FreeCurPortUsed()
 {
     int id = 0;
 
-    if ( sem_oper(id, -1) == SEM_ERROR )
+    if (sem_oper(id,-1) == SEM_ERROR)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "FreeCurPortUsed:Lock,%s", gs_sem_err);
         return;
@@ -612,7 +617,7 @@ void FreeCurPortUsed()
 
     cur_shm[cur_serial].is_used = 0;
 
-    if ( sem_oper(id, 1) == SEM_ERROR )
+    if (sem_oper(id, 1) == SEM_ERROR)
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "FreeCurPortUsed:unLock,%s", gs_sem_err);
         return;
@@ -656,34 +661,26 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
     ReadAuthIP();
 
-    if ( ConnectDB(G_ini.port_list[ini_addr].DBUserName, G_ini.port_list[ini_addr].DBPassword, G_ini.port_list[ini_addr].Sid) == ERROR )
+    if( ConnectDB(G_ini.port_list[ini_addr].DBUserName, G_ini.port_list[ini_addr].DBPassword, G_ini.port_list[ini_addr].Sid) == ERROR )
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接失败", (int)getpid());
     }
-    else
-    {
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接成功", (int)getpid());
 
-        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接成功", (int)getpid());
+
+    if( getDBInfo(DBInfo) == ERROR ){
+
+        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 获取数据库信息失败", (int)getpid());
     }
-
-
-    if ( getDBInfo(DBInfo) == ERROR )
-    {
-        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库连接无效，无法获取数据库信息", (int)getpid());
-    }
-    else
-    {
-        WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库信息\n%s", (int)getpid(), DBInfo);
-    }
-
+    WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 数据库信息\n%s", (int)getpid(), DBInfo);
 
 
     WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d],sn=[%d],socket=[%d]:开始接收客户端请求", (int)getpid(), serial_no, socket_fd);
 
     ini_addr = 0;
-    for (i = 0; i < G_ini.port_num; i++)
+    for (i = 0 ; i < G_ini.port_num ; i++)
     {
-        if ( port == G_ini.port_list[i].lsnr_port )
+        if (port == G_ini.port_list[i].lsnr_port)
         {
             ini_addr = i;
             break;
@@ -692,7 +689,7 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
     while (cur_shm[serial_no].run_status == RUN_STATUS_RUNNING || cur_shm[serial_no].run_status == RUN_STATUS_REFRESH)
     {
-        if ( cur_shm[serial_no].run_status == RUN_STATUS_REFRESH )
+        if (cur_shm[serial_no].run_status == RUN_STATUS_REFRESH)
         {
             cur_shm[serial_no].run_status = RUN_STATUS_RUNNING;
             RegProcActive("REFRESH", 0);
@@ -701,29 +698,29 @@ void LsnrRec(int port, int serial_no, int socket_fd)
 
         RegProcActive("ACCEPT", 0);
 
-        if ( G_ini.port_list[ini_addr].is_debug == 1 )
+        if (G_ini.port_list[ini_addr].is_debug == 1)
         {
             WriteLog(cur_port, cur_serial, OUT_ULOG, "Begin Accept [%d][%d]...", socket_fd, G_ini.port_list[ini_addr].out_time);
         }
 
         sub_sockfd = startup_listen(socket_fd, G_ini.port_list[ini_addr].out_time);
-        if ( sub_sockfd <= 0 )
+        if (sub_sockfd <= 0)
         {
-            if ( G_ini.port_list[ini_addr].is_debug == 1 )
+            if (G_ini.port_list[ini_addr].is_debug == 1)
             {
                 WriteLog(cur_port, cur_serial, OUT_ULOG, "Accept Error,%d:%s", errno, strerror(errno));
             }
             continue;
         }
 
-        if ( verfiy_socket(sub_sockfd) != 0 )
+        if (verfiy_socket(sub_sockfd) != 0)
         {
             WriteLog(cur_port, cur_serial, OUT_ULOG, "即将断开连接");
             linker_cut(sub_sockfd, 0);
             continue;
         }
 
-        if ( IsPortUsed() == 0 )
+        if (IsPortUsed() == 0)
         {
             WriteLog(cur_port, cur_serial, OUT_ULOG, "超过最大连接数");
             linker_cut(sub_sockfd, 0);
@@ -733,7 +730,7 @@ void LsnrRec(int port, int serial_no, int socket_fd)
         while (cur_shm[serial_no].run_status == RUN_STATUS_RUNNING)
         {
             DealOnRec(sub_sockfd);
-            if ( G_ini.port_list[ini_addr].is_long_link == 0 )
+            if (G_ini.port_list[ini_addr].is_long_link == 0)
             {
                 break;
             }
@@ -753,7 +750,7 @@ void LsnrRec(int port, int serial_no, int socket_fd)
     strcpy(cur_shm[serial_no].cur_active, "");
     strcpy(cur_shm[serial_no].last_time, "");
 
-    if ( DisConnectDB() == RIGHT )
+    if( DisConnectDB() == RIGHT )
     {
         WriteLog(cur_port, cur_serial, OUT_ULOG, "pid=[%d] 断开数据库连接成功", (int)getpid());
     }
