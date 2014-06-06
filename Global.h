@@ -91,3 +91,7 @@ extern int GPSInfoCommit(const char *gps_info);
 extern int GPSInfoUpdate(const char *gps_info);
 
 
+extern void Parse_Geographic_Information(const char *GeograInfo, struct Geogra_INFO *geogra_info);
+extern int Deal_Geographic_Information(const char *GeograInfo);
+
+

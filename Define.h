@@ -76,7 +76,7 @@ struct AUTH_IPNET
 
 /*GPS数据报文，非结构体内存对齐*/
 #pragma pack(1)
-struct GPS_INFO
+struct Geogra_INFO
 {
     char msg_type[2 + 1];               //报文类型
     char msg_version[2 + 1];            //报文版本号
@@ -84,11 +84,11 @@ struct GPS_INFO
     char gps_msg_length[5 + 1];         //GPS数据信息总长度
     char device_id[6 + 1];              //设备编号
     char warn_flag[1 + 1];              //报警标志
-    char x_coordinate[11 + 1];          //X坐标
-    char y_coordinate[11 + 1];          //Y坐标
-    char speed[8 + 1];                  //速度
-    char direction[6 + 1];              //方向
-    char height[6 + 1];                 //高度
+    double x_coordinate;                //X坐标
+    double y_coordinate;                //Y坐标
+    double speed;                       //速度
+    double direction;                   //方向
+    double height;                      //高度
     char base_station_info1[5 + 1];     //基站信息1
     char base_station_info2[5 + 1];     //基站信息2
     char sent_msg_cnt[4 + 1];           //当日累计发包个数

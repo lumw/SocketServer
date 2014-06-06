@@ -106,8 +106,6 @@ int getDBInfo(char *DBInfo)
                 OCI_GetServerRevisionVersion(conn),
                 OCI_GetVersionConnection(conn)
             );
-
-    return RIGHT;
 }
 
 
@@ -207,38 +205,36 @@ int GPSInfoCommit(const char *gps_info)
     trim(s_speed);
     trim(s_direction);
 
-    //printf("[%s] [%s] [%s] [%s] [%s]\n", s_x_coordinate, s_Y_coordinate, s_speed, s_direction, s_height);
-
     sscanf(s_x_coordinate,  "%lf",   &x_coordinate);
     sscanf(s_Y_coordinate,  "%lf",   &Y_coordinate);
     sscanf(s_height,        "%lf",   &height);
     sscanf(s_speed,         "%lf",   &speed);
     sscanf(s_direction,     "%lf",   &direction);
 
-    //printf("数据转换类型完成\n");
-
-    OCI_BindString(stmt, ":devID",          device_id,    sizeof(device_id));
-    OCI_BindDouble(stmt, ":xcoordinate",    &x_coordinate);
-    OCI_BindDouble(stmt, ":ycoordinate",    &Y_coordinate);
-    OCI_BindDouble(stmt,  ":high",          &height);
-    OCI_BindDouble(stmt,  ":speed",         &speed);
-    OCI_BindDouble(stmt,  ":orientation",   &direction);
+    OCI_BindString(stmt,    ":devID",         device_id,    sizeof(device_id));
+    OCI_BindDouble(stmt,    ":xcoordinate",   &x_coordinate);
+    OCI_BindDouble(stmt,    ":ycoordinate",   &Y_coordinate);
+    OCI_BindDouble(stmt,    ":high",          &height);
+    OCI_BindDouble(stmt,    ":speed",         &speed);
+    OCI_BindDouble(stmt,    ":orientation",   &direction);
 
 
-    if ( OCI_Execute(stmt) )
+    if ( !OCI_Execute(stmt) )
     {
         return ERROR;
     }
 
-    if ( OCI_Commit(conn) )
+    if ( !OCI_Commit(conn) )
     {
         return ERROR;
     }
 
-    if ( OCI_StatementFree(stmt) )
+    if ( !OCI_StatementFree(stmt) )
     {
         return ERROR;
     }
+
+    return RIGHT;
 
 }
 
@@ -317,18 +313,20 @@ int GPSInfoUpdate(const char *gps_info)
     OCI_BindDouble(stmt,  ":speed",        &speed);
     OCI_BindDouble(stmt,  ":orientation",  &direction);
 
-    //printf("数据绑定完成...\n");
+    if ( !OCI_Execute(stmt) )
+    {
+        return ERROR;
+    }
 
-    OCI_Execute(stmt);
+    if ( !OCI_Commit(conn) )
+    {
+        return ERROR;
+    }
 
-    //printf("SQL执行完成...\n");
+    if ( !OCI_StatementFree(stmt) )
+    {
+        return ERROR;
+    }
 
-    OCI_Commit(conn);
-
-    //printf("SQL提交完成...\n");
-
-    OCI_StatementFree(stmt);
-
-    //printf("OCI_StatementFree\n");
-
+    return RIGHT;
 }
